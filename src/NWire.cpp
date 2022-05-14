@@ -1,12 +1,12 @@
 #include "NWire.h"
 
 NWireData::NWireData()
-    :address(ZERO), data(ZERO)
+    : address(ZERO), data(ZERO)
 {
 }
 
 NWireData::NWireData(uint8_t _address, uint32_t _data)
-    :address(_address), data(_data)
+    : address(_address), data(_data)
 {
 }
 
