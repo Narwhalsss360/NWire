@@ -28,6 +28,8 @@ struct NWireData
 {
     uint8_t address;
     uint32_t data;
+    NWireData();
+    NWireData(uint8_t, uint32_t);
 };
 
 typedef NWireData NWD;
@@ -54,6 +56,7 @@ public:
     NWD onReceive();
     void onRequest();
     bool getData(pNWD);
+    uint32_t getData(uint8_t);
     void add(NWD);
     uint8_t getLastError() const;
     void clearLastError();

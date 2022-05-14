@@ -1,5 +1,15 @@
 #include "NWire.h"
 
+NWireData::NWireData()
+    :address(ZERO), data(ZERO)
+{
+}
+
+NWireData::NWireData(uint8_t _address, uint32_t _data)
+    :address(_address), data(_data)
+{
+}
+
 NWireSlave::NWireSlave()
     : NWireSlave(DEFAULT_NWD_LENGTH)
 {
@@ -132,6 +142,21 @@ bool NWireSlave::getData(pNWD nwd)
     {
         lastError = NO_DATA;
         return false;
+    }
+}
+
+uint32_t NWireSlave::getData(uint8_t address)
+{
+    uint8_t index = search(SEARCH_RECEIVED, address);
+    if (index < length)
+    {
+        lastError = NULL;
+        return receivedData[index].data;
+    }
+    else
+    {
+        lastError = NO_DATA;
+        return NULL;
     }
 }
 
