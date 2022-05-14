@@ -2,12 +2,13 @@
 #define NWire
 
 #if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
+#include "Arduino.h"
 #else
-	#include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 #include <NDefs.h>
+#include <Wire.h>
 
 #define MAIN_BUFFER_SIZE 5
 #define DATA_SIZE 4
@@ -19,7 +20,8 @@
 
 enum NWireErrors
 {
-    NO_DATA = 1
+    NULL_MALLOC = 1,
+    NO_DATA
 };
 
 struct NWireData
@@ -29,7 +31,7 @@ struct NWireData
 };
 
 typedef NWireData NWD;
-typedef NWD* pNWD;
+typedef NWD *pNWD;
 
 class NWireSlave
 {
@@ -44,14 +46,17 @@ private:
     uint8_t lastError;
     void clearMainBuffer();
     uint32_t bytesToU32() const;
-    uint8_t search(uint8_t, uint8_t) const;
+    uint8_t search(uint8_t, uint8_t);
+
 public:
     NWireSlave();
     NWireSlave(uint8_t);
     NWD onReceive();
     void onRequest();
     bool getData(pNWD);
-    void add(pNWD);
-    uint8_t getLastError();
+    void add(NWD);
+    uint8_t getLastError() const;
+    void clearLastError();
+    uint8_t *getBuffer() const;
 };
 #endif
