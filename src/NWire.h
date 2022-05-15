@@ -53,6 +53,7 @@ private:
 public:
     NWireSlave();
     NWireSlave(uint8_t);
+    ~NWireSlave();
     NWD onReceive();
     void onRequest();
     bool getData(pNWD);

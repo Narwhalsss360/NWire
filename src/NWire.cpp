@@ -29,6 +29,12 @@ NWireSlave::NWireSlave(uint8_t size)
     length = size;
 }
 
+NWireSlave::~NWireSlave()
+{
+    free(receivedData);
+    free(sendData);
+}
+
 void NWireSlave::clearMainBuffer()
 {
     for (uint8_t i = ZERO; i < MAIN_BUFFER_SIZE; i++)
