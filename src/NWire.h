@@ -1,5 +1,5 @@
-#ifndef NWire
-#define NWire
+#ifndef NWire_h
+#define NWire_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
