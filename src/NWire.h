@@ -12,11 +12,18 @@
 
 #define MAIN_BUFFER_SIZE 5
 #define DATA_SIZE 4
-#define NWD_SIZE sizeof(NWD)
+#define DEFAULT_NWD_LENGTH 32
+
+#define ADDRESS_BUFFER_INDEX 0
+#define TX_ADDRESS_BUFFER_INDEX 1
+#define TX_FLAG 255
+#define RECV_DATA_INDEX_START 1
+#define TX_DATA_INDEX_START RECV_DATA_INDEX_START
+
 #define INVALID_NWD(nwd) (nwd.address == 0 && nwd.data == 0) ? true : false
+
 #define SEARCH_SEND 0x01
 #define SEARCH_RECEIVED 0x02
-#define DEFAULT_NWD_LENGTH 32
 
 enum NWireErrors
 {
@@ -35,7 +42,21 @@ struct NWireData
 typedef NWireData NWD;
 typedef NWD *pNWD;
 
-class NWireSlave
+class NWireHost
+{
+private:
+    uint8_t mainBuffer[MAIN_BUFFER_SIZE];
+    void clearMainBuffer();
+    uint32_t bytesToU32() const;
+
+public:
+    NWireHost();
+    uint8_t getData(uint8_t, uint8_t);
+    void sendData(uint8_t, uint8_t, uint32_t);
+    uint8_t *getBuffer() const;
+};
+
+class NWireClient
 {
 private:
     uint8_t mainBuffer[MAIN_BUFFER_SIZE];
@@ -51,9 +72,8 @@ private:
     uint8_t search(uint8_t, uint8_t);
 
 public:
-    NWireSlave();
-    NWireSlave(uint8_t);
-    ~NWireSlave();
+    NWireClient();
+    NWireClient(uint8_t);
     NWD onReceive();
     void onRequest();
     bool getData(pNWD);
@@ -62,5 +82,6 @@ public:
     uint8_t getLastError() const;
     void clearLastError();
     uint8_t *getBuffer() const;
+    ~NWireClient();
 };
 #endif

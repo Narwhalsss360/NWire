@@ -1,5 +1,6 @@
 #include "NWire.h"
 
+#pragma region NWireData
 NWireData::NWireData()
     : address(ZERO), data(ZERO)
 {
@@ -9,16 +10,84 @@ NWireData::NWireData(uint8_t _address, uint32_t _data)
     : address(_address), data(_data)
 {
 }
+#pragma endregion
 
-NWireSlave::NWireSlave()
-    : NWireSlave(DEFAULT_NWD_LENGTH)
+#pragma region NWireHost
+NWireHost::NWireHost()
 {
 }
 
-NWireSlave::NWireSlave(uint8_t size)
+void NWireHost::clearMainBuffer()
+{
+    for (uint8_t i = ZERO; i < MAIN_BUFFER_SIZE; i++)
+    {
+        mainBuffer[i] = 0x00;
+    }
+}
+
+uint32_t NWireHost::bytesToU32() const
+{
+    byte dataBuffer[DATA_SIZE];
+    for (uint8_t i = ZERO; i < DATA_SIZE; i++)
+    {
+        dataBuffer[i] = mainBuffer[i + 1];
+    }
+    return reinterpret_c_style(uint32_t, dataBuffer);
+}
+
+uint8_t NWireHost::getData(uint8_t deviceAddress, uint8_t address)
+{
+    clearMainBuffer();
+    mainBuffer[ADDRESS_BUFFER_INDEX] = TX_FLAG;
+    mainBuffer[TX_ADDRESS_BUFFER_INDEX] = address;
+
+    Wire.beginTransmission(deviceAddress);
+    Wire.write(mainBuffer, DATA_SIZE);
+    Wire.endTransmission();
+    Wire.requestFrom(deviceAddress, (byte)DATA_SIZE);
+
+    for (uint8_t i = RECV_DATA_INDEX_START; i < DATA_SIZE; i++)
+    {
+        if (!Wire.available())
+            break;
+        mainBuffer[i] = Wire.read();
+    }
+    return bytesToU32();
+}
+
+void NWireHost::sendData(uint8_t deviceAddress, uint8_t address, uint32_t data)
+{
+    clearMainBuffer();
+    mainBuffer[ADDRESS_BUFFER_INDEX] = address;
+
+    byte dataByteBuffer[DATA_SIZE];
+    memcpy(dataByteBuffer, &address, DATA_SIZE);
+    for (uint8_t i = ZERO; i < DATA_SIZE; i++)
+    {
+        mainBuffer[i + 1] = dataByteBuffer[i];
+    }
+
+    Wire.beginTransmission(deviceAddress);
+    Wire.write(mainBuffer, MAIN_BUFFER_SIZE);
+    Wire.endTransmission();
+}
+
+uint8_t *NWireHost::getBuffer() const
+{
+    return mainBuffer;
+}
+#pragma endregion
+
+#pragma region NWireClient
+NWireClient::NWireClient()
+    : NWireClient(DEFAULT_NWD_LENGTH)
+{
+}
+
+NWireClient::NWireClient(uint8_t size)
     : mainBuffer({ZERO}), receivedData(NULL), sendData(NULL), length(size), receivedDataIndex(ZERO), sendDataIndex(ZERO), txAddress(ZERO), lastError(ZERO)
 {
-    uint8_t totalSize = size * NWD_SIZE;
+    uint8_t totalSize = size * sizeof(NWD);
     receivedData = (pNWD)malloc(totalSize);
     sendData = (pNWD)malloc(totalSize);
     if (receivedData == NULL || sendData == NULL)
@@ -29,13 +98,13 @@ NWireSlave::NWireSlave(uint8_t size)
     length = size;
 }
 
-NWireSlave::~NWireSlave()
+NWireClient::~NWireClient()
 {
     free(receivedData);
     free(sendData);
 }
 
-void NWireSlave::clearMainBuffer()
+void NWireClient::clearMainBuffer()
 {
     for (uint8_t i = ZERO; i < MAIN_BUFFER_SIZE; i++)
     {
@@ -43,17 +112,17 @@ void NWireSlave::clearMainBuffer()
     }
 }
 
-uint32_t NWireSlave::bytesToU32() const
+uint32_t NWireClient::bytesToU32() const
 {
-    byte start[DATA_SIZE];
+    byte dataBuffer[DATA_SIZE];
     for (uint8_t i = ZERO; i < DATA_SIZE; i++)
     {
-        start[i] = mainBuffer[i + 1];
+        dataBuffer[i] = mainBuffer[i + 1];
     }
-    return reinterpret_c_style(uint32_t, start);
+    return reinterpret_c_style(uint32_t, dataBuffer);
 }
 
-uint8_t NWireSlave::search(uint8_t dataSelect, uint8_t address)
+uint8_t NWireClient::search(uint8_t dataSelect, uint8_t address)
 {
     if (dataSelect == SEARCH_SEND)
     {
@@ -79,7 +148,7 @@ uint8_t NWireSlave::search(uint8_t dataSelect, uint8_t address)
     return length;
 }
 
-NWD NWireSlave::onReceive()
+NWD NWireClient::onReceive()
 {
     clearMainBuffer();
     for (uint8_t i = ZERO; i < MAIN_BUFFER_SIZE; i++)
@@ -88,9 +157,9 @@ NWD NWireSlave::onReceive()
             break;
         mainBuffer[i] = Wire.read();
     }
-    if (mainBuffer[ZERO] == BYTE_MAX)
+    if (mainBuffer[ADDRESS_BUFFER_INDEX] == TX_FLAG)
     {
-        txAddress = mainBuffer[1];
+        txAddress = mainBuffer[TX_ADDRESS_BUFFER_INDEX];
         return {ZERO, ZERO};
     }
     else
@@ -111,14 +180,14 @@ NWD NWireSlave::onReceive()
         {
             receivedDataIndex++;
         }
-        receivedData[receivedDataIndex].address = mainBuffer[ZERO];
+        receivedData[receivedDataIndex].address = mainBuffer[ADDRESS_BUFFER_INDEX];
         receivedData[receivedDataIndex].data = bytesToU32();
         lastError = NULL;
         return receivedData[receivedDataIndex];
     }
 }
 
-void NWireSlave::onRequest()
+void NWireClient::onRequest()
 {
     byte bytes[DATA_SIZE] = {ZERO};
     uint8_t index = search(SEARCH_SEND, txAddress);
@@ -135,7 +204,7 @@ void NWireSlave::onRequest()
     }
 }
 
-bool NWireSlave::getData(pNWD nwd)
+bool NWireClient::getData(pNWD nwd)
 {
     uint8_t index = search(SEARCH_RECEIVED, nwd->address);
     if (index < length)
@@ -151,7 +220,7 @@ bool NWireSlave::getData(pNWD nwd)
     }
 }
 
-uint32_t NWireSlave::getData(uint8_t address)
+uint32_t NWireClient::getData(uint8_t address)
 {
     uint8_t index = search(SEARCH_RECEIVED, address);
     if (index < length)
@@ -166,7 +235,7 @@ uint32_t NWireSlave::getData(uint8_t address)
     }
 }
 
-void NWireSlave::add(NWD nwd)
+void NWireClient::add(NWD nwd)
 {
     if (sendDataIndex == length - 1)
     {
@@ -179,17 +248,18 @@ void NWireSlave::add(NWD nwd)
     sendData[sendDataIndex] = nwd;
 }
 
-uint8_t NWireSlave::getLastError() const
+uint8_t NWireClient::getLastError() const
 {
     return lastError;
 }
 
-void NWireSlave::clearLastError()
+void NWireClient::clearLastError()
 {
     lastError = NULL;
 }
 
-uint8_t *NWireSlave::getBuffer() const
+uint8_t *NWireClient::getBuffer() const
 {
     return (uint8_t *)mainBuffer;
 }
+#pragma endregion
