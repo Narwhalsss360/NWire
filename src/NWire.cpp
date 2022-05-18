@@ -46,6 +46,11 @@ uint32_t NWireHost::getData(uint8_t deviceAddress, uint8_t address)
     Wire.endTransmission();
     Wire.requestFrom(deviceAddress, (byte)DATA_SIZE);
 
+    if (!Wire.available())
+    {
+        return 0;
+    }
+
     for (uint8_t i = RECV_DATA_INDEX_START; i < DATA_SIZE; i++)
     {
         if (!Wire.available())
