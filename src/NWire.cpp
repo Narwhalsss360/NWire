@@ -21,7 +21,7 @@ void NWireHost::clearMainBuffer()
 {
     for (uint8_t i = ZERO; i < MAIN_BUFFER_SIZE; i++)
     {
-        mainBuffer[i] = 0x00;
+        mainBuffer[i] = ZERO;
     }
 }
 
@@ -48,7 +48,7 @@ uint32_t NWireHost::getData(uint8_t deviceAddress, uint8_t address)
 
     if (!Wire.available())
     {
-        return 0;
+        return NULL;
     }
 
     for (uint8_t i = RECV_DATA_INDEX_START; i < DATA_SIZE; i++)
@@ -260,6 +260,6 @@ void NWireClient::clearLastError()
 
 const uint8_t *NWireClient::getBuffer() const
 {
-    return (uint8_t *)mainBuffer;
+    return mainBuffer;
 }
 #pragma endregion
