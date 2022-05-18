@@ -63,14 +63,9 @@ uint32_t NWireHost::getData(uint8_t deviceAddress, uint8_t address)
 void NWireHost::sendData(uint8_t deviceAddress, uint8_t address, uint32_t data)
 {
     clearMainBuffer();
-    mainBuffer[ADDRESS_BUFFER_INDEX] = address;
 
-    byte dataByteBuffer[DATA_SIZE];
-    memcpy(dataByteBuffer, &address, DATA_SIZE);
-    for (uint8_t i = ZERO; i < DATA_SIZE; i++)
-    {
-        mainBuffer[i + 1] = dataByteBuffer[i];
-    }
+    mainBuffer[ADDRESS_BUFFER_INDEX] = address;
+    memmove(&mainBuffer[TX_ADDRESS_BUFFER_INDEX], &data, DATA_SIZE);
 
     Wire.beginTransmission(deviceAddress);
     Wire.write(mainBuffer, MAIN_BUFFER_SIZE);
