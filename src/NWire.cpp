@@ -35,7 +35,7 @@ uint32_t NWireHost::bytesToU32() const
     return reinterpret_c_style(uint32_t, dataBuffer);
 }
 
-uint8_t NWireHost::getData(uint8_t deviceAddress, uint8_t address)
+uint32_t NWireHost::getData(uint8_t deviceAddress, uint8_t address)
 {
     clearMainBuffer();
     mainBuffer[ADDRESS_BUFFER_INDEX] = TX_FLAG;
