@@ -193,7 +193,7 @@ void NWireClient::onRequest()
     uint8_t index = search(SEARCH_SEND, txAddress);
     if (index < length)
     {
-        memcpy(bytes, &sendData[index].data, DATA_SIZE);
+        memmove(bytes, &sendData[index].data, DATA_SIZE);
         Wire.write(bytes, DATA_SIZE);
         lastError = NULL;
     }
