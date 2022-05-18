@@ -200,7 +200,7 @@ void NWireClient::onRequest()
     else
     {
         Wire.write(bytes, DATA_SIZE);
-        lastError = NULL;
+        lastError = NO_DATA;
     }
 }
 
