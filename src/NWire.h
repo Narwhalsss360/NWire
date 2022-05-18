@@ -53,7 +53,7 @@ public:
     NWireHost();
     uint32_t getData(uint8_t, uint8_t);
     void sendData(uint8_t, uint8_t, uint32_t);
-    uint8_t *getBuffer() const;
+    const uint8_t *getBuffer() const;
 };
 
 class NWireClient
@@ -81,7 +81,7 @@ public:
     void add(NWD);
     uint8_t getLastError() const;
     void clearLastError();
-    uint8_t *getBuffer() const;
+    const uint8_t *getBuffer() const;
     ~NWireClient();
 };
 #endif

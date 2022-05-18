@@ -72,7 +72,7 @@ void NWireHost::sendData(uint8_t deviceAddress, uint8_t address, uint32_t data)
     Wire.endTransmission();
 }
 
-uint8_t *NWireHost::getBuffer() const
+const uint8_t *NWireHost::getBuffer() const
 {
     return mainBuffer;
 }
@@ -258,7 +258,7 @@ void NWireClient::clearLastError()
     lastError = NULL;
 }
 
-uint8_t *NWireClient::getBuffer() const
+const uint8_t *NWireClient::getBuffer() const
 {
     return (uint8_t *)mainBuffer;
 }
