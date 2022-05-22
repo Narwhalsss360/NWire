@@ -18,7 +18,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\NWire.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\NDefs\src\NDefs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\NWire.h" />
   </ItemGroup>
   <ItemGroup>
