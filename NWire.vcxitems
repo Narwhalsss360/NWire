@@ -18,6 +18,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\NWire.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\NDefs\src\NDefs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\NWire.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)library.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)keywords.txt" />
   </ItemGroup>
 </Project>
