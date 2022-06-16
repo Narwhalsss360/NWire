@@ -12,6 +12,9 @@
     <Filter Include="Library metadata">
       <UniqueIdentifier>{7546d26b-70b8-457a-a7e3-9ddd7cf440fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Examples">
+      <UniqueIdentifier>{de9a65e9-182b-45cd-b0ce-c4c83bbac075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\NWire.cpp">
@@ -26,6 +29,15 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)library.properties">
       <Filter>Library metadata</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\NHC-SR04\README.md">
+      <Filter>Library metadata</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)examples\NWireClient\NWireClient.ino">
+      <Filter>Examples</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)examples\NWireHost\NWireHost.ino">
+      <Filter>Examples</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)src\NWire.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\NHC-SR04\README.md" />
+    <None Include="$(MSBuildThisFileDirectory)examples\NWireClient\NWireClient.ino" />
+    <None Include="$(MSBuildThisFileDirectory)examples\NWireHost\NWireHost.ino" />
     <None Include="$(MSBuildThisFileDirectory)library.properties" />
   </ItemGroup>
   <ItemGroup>
